@@ -4,30 +4,40 @@ import axios from 'axios';
 const ImageUploader = () => {
   const [image, setImage] = useState(null);
   const [compressedImage, setCompressedImage] = useState(null);
+  //const [resolution, setResolution] = useState(100); //initial resolution
+  const [format, setFormat] = useState('JPEG'); // Initial format 
 
   const handleImageChange = (e) => {
     const selectedImage = e.target.files[0];
     setImage(selectedImage);
+  };
 
+  const handleCompressedImage = (e) => {
     const formData = new FormData();
-    formData.append('image', selectedImage);
-
-    axios.post('http://localhost:5000/upload', formData)
+    formData.append('image', image);
+    //formData.append('resolution', resolution);
+    formData.append('format', format);
+  
+    axios.post('http://localhost:5000/upload', formData, {
+      responseType: 'blob'
+    })
       .then(response => {
         console.log(response.data);
-        setCompressedImage(response.data.compressed_image);
+        setCompressedImage(response.data);
       })
       .catch(error => {
-        console.error('Error uploading and compressing image:', error);
+        console.error('Error compressing image:', error);
       });
   };
 
   const handleDownloadClick = () => {
     // Create a temporary link element
+    const downloadUrl = window.URL.createObjectURL(new Blob([compressedImage]));
     const downloadLink = document.createElement('a');
-    downloadLink.href = URL.createObjectURL(compressedImage);
-    downloadLink.download = 'compressed_image.jpg';
+    downloadLink.href = downloadUrl;
+    downloadLink.setAttribute('download','compressed_image.'+format.toLowerCase());
     // Simulate click on the link to start download
+    document.body.appendChild(downloadLink);
     downloadLink.click();
   };
 
@@ -40,6 +50,7 @@ const ImageUploader = () => {
           <img src={URL.createObjectURL(image)} alt="Uploaded" />
         </div>
       )}
+      <button onClick={handleCompressedImage}> COMPRESS IMAGE</button>
       {compressedImage && (
         <div>
           <h2>Compressed Image Preview:</h2>
