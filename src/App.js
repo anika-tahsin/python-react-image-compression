@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const ImageUploader = () => {
+const ImageCompressionApp = () => {
   const [image, setImage] = useState(null);
   const [compressedImage, setCompressedImage] = useState(null);
-  //const [resolution, setResolution] = useState(100); //initial resolution
-  const [format, setFormat] = useState('JPEG'); // Initial format 
+  const [quality, setQuality] = useState(80); // Initial quality
 
   const handleImageChange = (e) => {
     const selectedImage = e.target.files[0];
     setImage(selectedImage);
   };
 
-  const handleCompressedImage = (e) => {
+  const handleCompression = () => {
     const formData = new FormData();
     formData.append('image', image);
-    //formData.append('resolution', resolution);
-    formData.append('format', format);
-  
-    axios.post('http://localhost:5000/upload', formData, {
+    formData.append('quality', quality);
+
+    axios.post('http://localhost:5000/compress', formData, {
       responseType: 'blob'
     })
       .then(response => {
-        console.log(response.data);
         setCompressedImage(response.data);
       })
       .catch(error => {
@@ -30,36 +27,46 @@ const ImageUploader = () => {
       });
   };
 
-  const handleDownloadClick = () => {
-    // Create a temporary link element
-    const downloadUrl = window.URL.createObjectURL(new Blob([compressedImage]));
-    const downloadLink = document.createElement('a');
-    downloadLink.href = downloadUrl;
-    downloadLink.setAttribute('download','compressed_image.'+format.toLowerCase());
-    // Simulate click on the link to start download
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
+  const handleDownload = () => {
+    const url = window.URL.createObjectURL(new Blob([compressedImage]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'compressed_image.jpg');
+    document.body.appendChild(link);
+    link.click();
   };
-
+    
   return (
-    <div>
+    <div> 
+      <h1>Image Compression</h1>
       <input type="file" onChange={handleImageChange} accept="image/*" />
       {image && (
         <div>
-          <h2>Original Image Preview:</h2>
-          <img src={URL.createObjectURL(image)} alt="Uploaded" />
-        </div>
-      )}
-      <button onClick={handleCompressedImage}> COMPRESS IMAGE</button>
+          <h2>Preview:</h2>
+          <img src={URL.createObjectURL(image)} alt="Uploaded" /> </div>
+        )}
+      <div>
+        <label htmlFor="quality">Quality:</label>
+        <input
+          type="range"
+          id="quality"
+          min="1"
+          max="100"
+          value={quality}
+          onChange={(e) => setQuality(e.target.value)}
+        />
+        {quality}
+      </div>
+      <button onClick={handleCompression}>Compress Image</button>
       {compressedImage && (
         <div>
           <h2>Compressed Image Preview:</h2>
           <img src={URL.createObjectURL(compressedImage)} alt="Compressed" />
-          <button onClick={handleDownloadClick}>Download Compressed Image</button>
+          <button onClick={handleDownload}>Download Compressed Image</button>
         </div>
       )}
     </div>
   );
 };
 
-export default ImageUploader;
+export default ImageCompressionApp;
