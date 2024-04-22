@@ -17,16 +17,16 @@ const ImageCompressionApp = () => {
     formData.append('image', image);
     formData.append('quality', quality);
 
-    axios.post('http://localhost:5000/compress', formData, {
-      responseType: 'blob'
-    })
-      .then(response => {
-        setCompressedImage(response.data);
-      })
-      .catch(error => {
-        console.error('Error compressing image:', error);
-      });
-  };
+  //   axios.post('http://localhost:5000/compress', formData, {
+  //     responseType: 'blob'
+  //   })
+  //     .then(response => {
+  //       setCompressedImage(response.data);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error compressing image:', error);
+  //     });
+  // };
 
   const uploadHandler= async ()=>{
     const formData = new FormData();
