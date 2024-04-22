@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 
 const ImageCompressionApp = () => {
   const [image, setImage] = useState(null);
@@ -16,7 +16,7 @@ const ImageCompressionApp = () => {
     const formData = new FormData();
     formData.append('image', image);
     formData.append('quality', quality);
-
+  }
   //   axios.post('http://localhost:5000/compress', formData, {
   //     responseType: 'blob'
   //   })
